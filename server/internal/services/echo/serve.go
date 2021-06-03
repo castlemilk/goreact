@@ -36,8 +36,6 @@ func (s *echoServer) Serve(ctx context.Context, logger *log.Logger, address stri
 }
 
 func registerSwaggerUI(mux *http.ServeMux) {
-	//fs := http.FileServer(http.Dir("./swaggerui"))
-	//http.Handle("/swaggerui/", http.StripPrefix("/swaggerui/", fs))
 
 	statikFS, err := statikfs.New()
 	if err != nil {

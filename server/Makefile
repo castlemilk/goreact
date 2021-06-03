@@ -3,4 +3,4 @@ build:
 run:
 	go run cmd/backend/main.go
 generate.swagger:
-	statik -f -src=../web/dist/swagger-ui/dist -dest=internal/
+	statik -f -src=../web/dist/swagger-ui/ -dest=internal/
