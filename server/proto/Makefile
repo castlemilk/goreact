@@ -59,3 +59,9 @@ buf.generate:
 	buf generate \
 		--template ./buf.gen.yaml \
 		--path ./services/echo/echo.proto
+	buf generate \
+		--template ./buf.gen.yaml \
+		--path ./google/api/annotations.proto
+	buf generate \
+		--template ./buf.gen.yaml \
+		--path ./google/api/http.proto

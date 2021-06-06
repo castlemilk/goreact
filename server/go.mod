@@ -6,7 +6,6 @@ require (
 	github.com/go-playground/validator/v10 v10.6.1
 	github.com/golang/glog v0.0.0-20210429001901-424d2337a529
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
-	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.4.0
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/rakyll/statik v0.1.7

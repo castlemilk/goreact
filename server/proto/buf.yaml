@@ -9,5 +9,5 @@ lint:
 breaking:
   use:
     - FILE
-deps:
-  - buf.build/beta/googleapis
+# deps:
+#   - buf.build/beta/googleapis

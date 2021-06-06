@@ -17,3 +17,15 @@ plugins:
     out: ../../web/dist/swagger-ui/
     opt:
       - allow_repeated_fields_in_body=true
+  - name: ts 
+    out: ../../web/src/lib
+    opt: grpc_js
+    strategy: all
+  - name: js
+    out: ../../web/src/lib
+    opt: import_style=commonjs,binary
+    strategy: all
+  - name: grpc-web
+    out: ../../web/src/lib
+    opt: import_style=commonjs,mode=grpcwebtext
+    strategy: all

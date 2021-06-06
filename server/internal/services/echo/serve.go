@@ -20,6 +20,10 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
+const grpcContentType = "application/grpc"
+const grpcWebContentType = "application/grpc-web"
+const grpcWebTextContentType = "application/grpc-web-text"
+
 func (s *echoServer) Serve(ctx context.Context, logger *log.Logger, address string) error {
 
 	gRPCServer := s.newgRPCServer(ctx, logger)
@@ -49,7 +53,7 @@ func registerSwaggerUI(mux *http.ServeMux) {
 // dispatch enables support for grpc and rest on same port
 func dispatcher(ctx context.Context, grpcHandler http.Handler, httpHandler http.Handler) http.Handler {
 	hf := func(w http.ResponseWriter, r *http.Request) {
-		if r.ProtoMajor == 2 && strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc") {
+		if (r.ProtoMajor == 2 || r.Method == http.MethodPost) && strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc") {
 			log.Infof("grpc request")
 			grpcHandler.ServeHTTP(w, r)
 		} else {
@@ -57,7 +61,7 @@ func dispatcher(ctx context.Context, grpcHandler http.Handler, httpHandler http.
 			httpHandler.ServeHTTP(w, r)
 		}
 	}
-	return h2c.NewHandler(http.HandlerFunc(hf), &http2.Server{})
+	return allowCORS(h2c.NewHandler(http.HandlerFunc(hf), &http2.Server{}))
 }
 
 func (s *echoServer) newgRPCServer(ctx context.Context, logger *log.Logger) *grpc.Server {
@@ -91,4 +95,28 @@ func (s *echoServer) newHTTPHandler(ctx context.Context, address string) (*http.
 	mux := http.NewServeMux()
 	mux.Handle("/", gwmux)
 	return mux, nil
+}
+
+func preflightHandler(w http.ResponseWriter, r *http.Request) {
+	// headers := []string{"Content-Type", "Accept", ""}
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	methods := []string{"GET", "HEAD", "POST", "PUT", "DELETE"}
+	w.Header().Set("Access-Control-Allow-Methods", strings.Join(methods, ","))
+	log.Infof("preflight request for %s", r.URL.Path)
+	return
+}
+
+// allowCORS allows Cross Origin Resoruce Sharing from any origin.
+// Don't do this without consideration in production systems.
+func allowCORS(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if origin := r.Header.Get("Origin"); origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			if r.Method == "OPTIONS" && r.Header.Get("Access-Control-Request-Method") != "" {
+				preflightHandler(w, r)
+				return
+			}
+		}
+		h.ServeHTTP(w, r)
+	})
 }
