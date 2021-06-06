@@ -1,0 +1,9 @@
+apiVersion: skaffold/v2beta16
+kind: Config
+build:
+  artifacts:
+  - image: gcr.io/shorted-dev-aba5688f/server
+    docker:
+      dockerfile: ./cmd/backend/Dockerfile
+  local:
+    push: true
