@@ -3,8 +3,8 @@ package echo
 import (
 	"context"
 
+	"github.com/castlemilk/goreact/server/pkg/log"
 	echopb "github.com/castlemilk/goreact/server/pkg/services/echo"
-	"github.com/golang/glog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -13,12 +13,12 @@ import (
 var _ echopb.EchoServiceServer = (*echoServer)(nil)
 
 func (s *echoServer) Echo(ctx context.Context, msg *echopb.SimpleMessage) (*echopb.SimpleMessage, error) {
-	glog.Info(msg)
+	log.Infof("echo: ", msg)
 	return msg, nil
 }
 
 func (s *echoServer) EchoBody(ctx context.Context, msg *echopb.SimpleMessage) (*echopb.SimpleMessage, error) {
-	glog.Info(msg)
+	log.Infof("echoBody: ", msg)
 	grpc.SendHeader(ctx, metadata.New(map[string]string{
 		"foo": "foo1",
 		"bar": "bar1",
@@ -31,11 +31,11 @@ func (s *echoServer) EchoBody(ctx context.Context, msg *echopb.SimpleMessage) (*
 }
 
 func (s *echoServer) EchoDelete(ctx context.Context, msg *echopb.SimpleMessage) (*echopb.SimpleMessage, error) {
-	glog.Info(msg)
+	log.Infof("echoDelete: ", msg)
 	return msg, nil
 }
 
 func (s *echoServer) EchoPatch(ctx context.Context, msg *echopb.DynamicMessageUpdate) (*echopb.DynamicMessageUpdate, error) {
-	glog.Info(msg)
+	log.Infof("echoPatch: ", msg)
 	return msg, nil
 }

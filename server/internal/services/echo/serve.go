@@ -20,10 +20,6 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-const grpcContentType = "application/grpc"
-const grpcWebContentType = "application/grpc-web"
-const grpcWebTextContentType = "application/grpc-web-text"
-
 func (s *echoServer) Serve(ctx context.Context, logger *log.Logger, address string) error {
 
 	gRPCServer := s.newgRPCServer(ctx, logger)
@@ -32,9 +28,10 @@ func (s *echoServer) Serve(ctx context.Context, logger *log.Logger, address stri
 		return err
 	}
 	registerSwaggerUI(mux)
+	s.WrapGrpcServer(gRPCServer)
 	server := &http.Server{
 		Addr:    address,
-		Handler: dispatcher(ctx, gRPCServer, mux),
+		Handler: s.dispatcher(ctx, gRPCServer, mux),
 	}
 	return server.ListenAndServe()
 }
@@ -51,9 +48,14 @@ func registerSwaggerUI(mux *http.ServeMux) {
 }
 
 // dispatch enables support for grpc and rest on same port
-func dispatcher(ctx context.Context, grpcHandler http.Handler, httpHandler http.Handler) http.Handler {
+func (s *echoServer) dispatcher(ctx context.Context, grpcHandler http.Handler, httpHandler http.Handler) http.Handler {
 	hf := func(w http.ResponseWriter, r *http.Request) {
-		if (r.ProtoMajor == 2 || r.Method == http.MethodPost) && strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc") {
+
+		if s.IsAcceptableGrpcCorsRequest(r) || s.IsGrpcWebRequest(r) {
+			log.Infof("grpcweb request")
+			s.ServeHTTP(w, r)
+		}
+		if r.ProtoMajor == 2 && strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc") {
 			log.Infof("grpc request")
 			grpcHandler.ServeHTTP(w, r)
 		} else {
