@@ -5,5 +5,7 @@ build:
   - image: gcr.io/shorted-dev-aba5688f/gateway
     docker:
       dockerfile: ./Dockerfile
+      buildArgs: 
+        CONFIG_FILE: "{{ .CONFIG_FILE }}"
   local:
     push: true

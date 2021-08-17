@@ -11,8 +11,9 @@ export class GrpcClient {
   public readonly echo: EchoServicePromiseClient;
 
   constructor() {
-    this.echo = this.mapMetadata(new EchoServicePromiseClient('http://localhost:8080', null, null));
+    // this.echo = this.mapMetadata(new EchoServicePromiseClient('http://localhost:8081', null, null));
     // this.echo = this.mapMetadata(new EchoServicePromiseClient('https://server-ak2zgjnhlq-ts.a.run.app', null, null));
+    this.echo = this.mapMetadata(new EchoServicePromiseClient('https://gateway-ak2zgjnhlq-ts.a.run.app', null, null));
   }
 
   private mapMetadata<TClient>(client: TClient): TClient {
@@ -38,7 +39,7 @@ function App() {
   var client = new GrpcClient()
   var echoRequest = new SimpleMessage().setId("1234").setNum(1234)
   console.log(echoRequest)
-  client.echo.echo(echoRequest, {"Access-Control-Allow-Origin": "*"}).then(response => {console.log(response)})
+  client.echo.echo(echoRequest, null).then(response => {console.log(response)})
   return (
     <div className="App">
       <header className="App-header">
