@@ -1,0 +1,18 @@
+version: '3'
+services:
+  gateway:
+    build:
+      context: ./gateway
+    environment: 
+      - ENVOY_LOG_LEVEL=trace
+    volumes:
+      - ${PWD}/gateway/envoy.local.yaml:/etc/envoy/envoy.yaml
+    ports:
+      - "8081:8080"
+      - "9901:9901"
+    links:
+      - server
+  server:
+    build:
+      context: ./server
+      dockerfile: cmd/backend/Dockerfile
